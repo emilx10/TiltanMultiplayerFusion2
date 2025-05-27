@@ -12,21 +12,33 @@ using Unity.Multiplayer;
 
 public class LobbyManager : MonoBehaviour, INetworkRunnerCallbacks
 {
+    public static LobbyManager Instance;
+    public const string GAME_SCENE_NAME = "GameScene";
+
+  //  [SerializeField] private GameObject readyManagerGeneric;
+    [SerializeField] private ReadyManager readyManagerPrefab;
     [SerializeField] NetworkRunner networkRunner;
 
     [Header("UI References")] [SerializeField]
     private GameObject sessionPanel;
 
+    [SerializeField] private Button sendReadyButton;
     [SerializeField] private Button startSessionButton;
     [SerializeField] private Button endSessionButton;
+    [SerializeField] private Button startMatchButton;
     [SerializeField] private TextMeshProUGUI numberOfPlayersText;
-
-
+    
+    public ReadyManager readyManagerInstance;
+    private bool isReadyLocal = false;
+    
     private void Start()
     {
+        Instance = this;
         networkRunner.AddCallbacks(this);
 #if LOBBY_MANAGER_UI
         endSessionButton.interactable = false;
+        startMatchButton.interactable = false;
+        sendReadyButton.interactable = false;
 #endif
     }
 
@@ -49,9 +61,15 @@ public class LobbyManager : MonoBehaviour, INetworkRunnerCallbacks
         Debug.Log("Game Started");
 #if LOBBY_MANAGER_UI
         endSessionButton.interactable = true;
+        sendReadyButton.interactable = true;
+    //    startMatchButton.interactable = true;
 #endif
+        if(networkRunner.IsSharedModeMasterClient)
+         readyManagerInstance = networkRunner.Spawn(readyManagerPrefab);
+        // if (networkRunner.IsSharedModeMasterClient)
+        //     networkRunner.Spawn(readyManagerGeneric);
     }
-    
+
     public void EndSession()
     {
         if (networkRunner.IsRunning)
@@ -61,6 +79,8 @@ public class LobbyManager : MonoBehaviour, INetworkRunnerCallbacks
 #if LOBBY_MANAGER_UI
         startSessionButton.interactable = true;
         endSessionButton.interactable = false;
+        startMatchButton.interactable = false;
+        sendReadyButton.interactable = false;
 #endif
     }
 
@@ -96,6 +116,27 @@ public class LobbyManager : MonoBehaviour, INetworkRunnerCallbacks
 #endif
     }
 
+    public void StartMatch()
+    {
+        if(networkRunner.IsSceneAuthority)
+          networkRunner.LoadScene(GAME_SCENE_NAME);
+    }
+    
+    public void SetReady()
+    {
+        if (!isReadyLocal)
+        {
+            isReadyLocal = true;
+            readyManagerInstance.SetReadyRPC();
+            sendReadyButton.interactable = false;
+        }
+    }
+
+    public void MaxPlayersReady()
+    {
+        startMatchButton.interactable = true;
+    }
+
     #region RunnerCallBacks
 
     public void OnObjectExitAOI(NetworkRunner runner, NetworkObject obj, PlayerRef player)
@@ -105,7 +146,7 @@ public class LobbyManager : MonoBehaviour, INetworkRunnerCallbacks
     public void OnObjectEnterAOI(NetworkRunner runner, NetworkObject obj, PlayerRef player)
     {
     }
-    
+
     public void OnPlayerJoined(NetworkRunner runner, PlayerRef player)
     {
         bool isLocalPlayer = false;
@@ -195,6 +236,8 @@ public class LobbyManager : MonoBehaviour, INetworkRunnerCallbacks
 
     #endregion
 
+
+  
 
     // public async void StartSession()
     // {
