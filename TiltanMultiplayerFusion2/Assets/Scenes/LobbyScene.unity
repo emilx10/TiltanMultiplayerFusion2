@@ -803,7 +803,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6a092d1f4687a3e41b7b3d4dfe5d6d2d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  readyManagerPrefab: {fileID: 5123083712032383328, guid: 9da87996a2bbffc46bf145fb79aa3746, type: 3}
   networkRunner: {fileID: 1940105373}
   sessionPanel: {fileID: 738174464}
   sendReadyButton: {fileID: 1241728283}
@@ -1581,7 +1580,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1241728282
 RectTransform:
   m_ObjectHideFlags: 0

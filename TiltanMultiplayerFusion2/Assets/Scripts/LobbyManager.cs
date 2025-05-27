@@ -16,7 +16,7 @@ public class LobbyManager : MonoBehaviour, INetworkRunnerCallbacks
     public const string GAME_SCENE_NAME = "GameScene";
 
   //  [SerializeField] private GameObject readyManagerGeneric;
-    [SerializeField] private ReadyManager readyManagerPrefab;
+  //  [SerializeField] private ReadyManager readyManagerPrefab;
     [SerializeField] NetworkRunner networkRunner;
 
     [Header("UI References")] [SerializeField]
@@ -64,8 +64,8 @@ public class LobbyManager : MonoBehaviour, INetworkRunnerCallbacks
         sendReadyButton.interactable = true;
     //    startMatchButton.interactable = true;
 #endif
-        if(networkRunner.IsSharedModeMasterClient)
-         readyManagerInstance = networkRunner.Spawn(readyManagerPrefab);
+        // if(networkRunner.IsSharedModeMasterClient)
+        //  readyManagerInstance = networkRunner.Spawn(readyManagerPrefab);
         // if (networkRunner.IsSharedModeMasterClient)
         //     networkRunner.Spawn(readyManagerGeneric);
     }
