@@ -10,17 +10,17 @@ public class ReadyManager : NetworkBehaviour
     [Rpc]
     public void SetReadyRPC(RpcInfo info = default)
     {
-       // Debug.Log($"Player id {info.Source.PlayerId} is ready");
+        Debug.Log($"Player id {info.Source.PlayerId} is ready");
         readyCounter++;
-        // if(readyCounter >= 2)
-        //     onReadyCounterReachedMax?.Invoke();
+      //  if(readyCounter >= 2)
+            onReadyCounterReachedMax?.Invoke();
     }
 
     public override void Spawned()
     {
         base.Spawned();
         LobbyManager.Instance.readyManagerInstance = this;
-   //     onReadyCounterReachedMax += LobbyManager.Instance.MaxPlayersReady;
+        onReadyCounterReachedMax += LobbyManager.Instance.MaxPlayersReady;
     }
     
 }
