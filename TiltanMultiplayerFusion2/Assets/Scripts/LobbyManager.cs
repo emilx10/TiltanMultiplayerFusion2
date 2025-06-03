@@ -148,10 +148,7 @@ public class LobbyManager : MonoBehaviour, INetworkRunnerCallbacks
 
     public void OnPlayerJoined(NetworkRunner runner, PlayerRef player)
     {
-        bool isLocalPlayer = false;
-
-        if (networkRunner.LocalPlayer == player)
-            isLocalPlayer = true;
+        bool isLocalPlayer = networkRunner.LocalPlayer == player;
 
         Debug.Log($"Player {player.PlayerId} joined, localPlayer: {isLocalPlayer}");
 

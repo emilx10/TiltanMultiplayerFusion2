@@ -14,6 +14,7 @@ public class ReadyManager : NetworkBehaviour
         readyCounter++;
       //  if(readyCounter >= 2)
             onReadyCounterReachedMax?.Invoke();
+            
     }
 
     public override void Spawned()
