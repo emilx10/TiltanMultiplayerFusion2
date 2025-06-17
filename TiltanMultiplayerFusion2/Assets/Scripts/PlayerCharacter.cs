@@ -10,10 +10,14 @@ public class PlayerCharacter : NetworkBehaviour
     public Image hpBarImage;
     public int MaxHP;
     
-    // [Networked][field: SerializeField]
-    // public int HP { get; set; }
+    [Header("Projectile")]
+    [SerializeField] Projectile projectilePrefab;
+    [SerializeField] Transform projectileSpawnPoint;
+    
     [Networked, OnChangedRender (nameof(HPChanged))] [field: SerializeField]
     public int HP { get; set; }
+
+    private bool pressedFire = false;
 
     [ContextMenu("TakeDamageTest")]
     public void TakeDamageTest()
@@ -23,7 +27,7 @@ public class PlayerCharacter : NetworkBehaviour
     
     public void TakeDamage(int damage)
     {
-      //  if(Object.HasStateAuthority)
+        if(Object.HasStateAuthority)
             HP -= damage;
     }
 
@@ -40,7 +44,11 @@ public class PlayerCharacter : NetworkBehaviour
 
     }
 
-
+    private void Update()
+    {
+        if(!pressedFire)
+            pressedFire = Mouse.current.leftButton.wasPressedThisFrame;
+    }
 
     public override void FixedUpdateNetwork()
     {
@@ -58,7 +66,21 @@ public class PlayerCharacter : NetworkBehaviour
                 movementVector += Vector3.right;
             
             transform.Translate(movementVector * Runner.DeltaTime);
+
+            if (pressedFire)
+            {
+                pressedFire = false;
+                SpawnProjectile();
+            }
         }
      }
+
+    void SpawnProjectile()
+    {
+        if (Object.HasStateAuthority)
+        {
+            Projectile projectile = Runner.Spawn(projectilePrefab, projectileSpawnPoint.position, projectileSpawnPoint.rotation);
+        }
+    }
     
 }

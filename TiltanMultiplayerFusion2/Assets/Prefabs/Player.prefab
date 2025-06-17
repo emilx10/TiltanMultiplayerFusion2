@@ -75,6 +75,37 @@ MonoBehaviour:
   m_FillOrigin: 1
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+--- !u!1 &1277188643997989656
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 7443223559792980160}
+  m_Layer: 0
+  m_Name: ProjectileSpawnPoint
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &7443223559792980160
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1277188643997989656}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0.02071559, y: 0, z: 0, w: 0.9997854}
+  m_LocalPosition: {x: 0.13061869, y: 1.1332266, z: 0.7299798}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 4710094288369997582}
+  m_LocalEulerAnglesHint: {x: 2.374, y: 0, z: 0}
 --- !u!1 &1580835302157453666
 GameObject:
   m_ObjectHideFlags: 0
@@ -291,6 +322,7 @@ Transform:
   m_Children:
   - {fileID: 2945481836683176633}
   - {fileID: 8357404996040155253}
+  - {fileID: 7443223559792980160}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!95 &2639827463125215921
@@ -473,6 +505,8 @@ MonoBehaviour:
   lookAtCamera: {fileID: 7945148573652462854}
   hpBarImage: {fileID: 3834308048804173863}
   MaxHP: 100
+  projectilePrefab: {fileID: 8864723117260065023, guid: 1a711ff283bb13b45a7bcc8d44d8e910, type: 3}
+  projectileSpawnPoint: {fileID: 7443223559792980160}
   _HP: 100
 --- !u!1001 &11049399764920155
 PrefabInstance:
