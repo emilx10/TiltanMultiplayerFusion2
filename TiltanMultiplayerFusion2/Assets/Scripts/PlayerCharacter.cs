@@ -6,9 +6,16 @@ using UnityEngine.UI;
 
 public class PlayerCharacter : NetworkBehaviour
 {
+    public const string PLAYER_TAG = "Player";
     public LookAtCamera lookAtCamera;
     public Image hpBarImage;
     public int MaxHP;
+
+    [SerializeField] GameObject hitEffectPrefab;
+    
+    [Header("Movement")] 
+    [SerializeField] private float rotationSpeed = 30f;
+    [SerializeField] float speed = 10f;
     
     [Header("Projectile")]
     [SerializeField] Projectile projectilePrefab;
@@ -24,7 +31,14 @@ public class PlayerCharacter : NetworkBehaviour
     {
         TakeDamage(10);
     }
-    
+
+    [Rpc]
+    public void RPCTakeDamage(int damage)
+    {
+        //We should add here validation! 
+        //   Instantiate(hitEffectPrefab, transform.position, Quaternion.identity);
+        TakeDamage(damage);
+    }
     public void TakeDamage(int damage)
     {
         if(Object.HasStateAuthority)
@@ -56,6 +70,7 @@ public class PlayerCharacter : NetworkBehaviour
         if (Object.HasStateAuthority)
         {
             Vector3 movementVector = Vector3.zero;
+            Vector3 rotationVector = Vector3.zero;
             if(Keyboard.current.wKey.isPressed)
                 movementVector += Vector3.forward;
             if(Keyboard.current.sKey.isPressed)
@@ -64,8 +79,13 @@ public class PlayerCharacter : NetworkBehaviour
                 movementVector += Vector3.left;
             if(Keyboard.current.dKey.isPressed)
                 movementVector += Vector3.right;
+            if(Keyboard.current.leftArrowKey.isPressed)
+                rotationVector += Vector3.down;
+            if(Keyboard.current.rightArrowKey.isPressed)
+                rotationVector += Vector3.up;
             
-            transform.Translate(movementVector * Runner.DeltaTime);
+            transform.Rotate(rotationVector * (rotationSpeed * Runner.DeltaTime));
+            transform.Translate(movementVector * (speed * Runner.DeltaTime));
 
             if (pressedFire)
             {
@@ -79,7 +99,9 @@ public class PlayerCharacter : NetworkBehaviour
     {
         if (Object.HasStateAuthority)
         {
-            Projectile projectile = Runner.Spawn(projectilePrefab, projectileSpawnPoint.position, projectileSpawnPoint.rotation);
+            Projectile projectile = 
+                Runner.Spawn(projectilePrefab,
+                    projectileSpawnPoint.position, projectileSpawnPoint.rotation);
         }
     }
     
