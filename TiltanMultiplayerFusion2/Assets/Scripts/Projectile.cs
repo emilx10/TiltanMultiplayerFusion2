@@ -21,14 +21,21 @@ public class Projectile : NetworkBehaviour
     
     private void OnTriggerEnter(Collider collider)
     {
-        if(HasStateAuthority && collider.gameObject.CompareTag(PlayerCharacter.PLAYER_TAG))
+        if(collider.gameObject.CompareTag(PlayerCharacter.PLAYER_TAG))
         {
             PlayerCharacter player = collider.gameObject.GetComponent<PlayerCharacter>();
-            if (!player.HasStateAuthority)
+            Instantiate(player.hitEffectPrefab, player.transform.position, Quaternion.identity);
+            if (HasStateAuthority)
             {
-                player.RPCTakeDamage(10);
-                Runner.Despawn(Object);
+                if (!player.HasStateAuthority)
+                {
+                    player.RPCTakeDamage(10);
+                    Runner.Despawn(Object);
+                }
             }
+            
         }
+
+        //Add here projetcile hit particle instanatiate
     }
 }

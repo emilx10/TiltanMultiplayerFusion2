@@ -10,8 +10,10 @@ public class PlayerCharacter : NetworkBehaviour
     public LookAtCamera lookAtCamera;
     public Image hpBarImage;
     public int MaxHP;
+    
+    NetworkMecanimAnimator animator;
 
-    [SerializeField] GameObject hitEffectPrefab;
+    public GameObject hitEffectPrefab;
     
     [Header("Movement")] 
     [SerializeField] private float rotationSpeed = 30f;
