@@ -151,6 +151,34 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+<<<<<<< HEAD
+=======
+--- !u!114 &579546826
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 579546824}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 46cd3c7ef7657b54e92c25ba4f7a4ae9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  mainCamera: {fileID: 2116205426}
+  playerPrefab: {fileID: 6950915495295150835, guid: 9940c3337369924488383304a20dd56e, type: 3}
+  playerSpawnPoint: {fileID: 725058872}
+  twoPlayerSpawnPoints:
+  - {fileID: 7937137397897386090}
+  - {fileID: 458223052}
+  sixPlayerSpawnPoints:
+  - {fileID: 887783404}
+  - {fileID: 1431964310}
+  - {fileID: 1293109861}
+  - {fileID: 2087888823}
+  - {fileID: 335343948}
+  - {fileID: 275299118}
+>>>>>>> cb89d480794bed962d0ba0feb359e6bcba826fa6
 --- !u!114 &579546827
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -165,9 +193,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   SortKey: 3101452130
   ObjectInterest: 1
-  Flags: 262145
+  Flags: 131073
   NestedObjects: []
-  NetworkedBehaviours: []
+  NetworkedBehaviours:
+  - {fileID: 579546826}
   ForceRemoteRenderTimeframe: 0
 --- !u!1 &1370469934
 GameObject:
