@@ -127,7 +127,7 @@ public class LobbyManager : MonoBehaviour, INetworkRunnerCallbacks
     public void StartMatch()
     {
       //  networkRunnerInstance.SessionInfo.IsVisible = false;
-    //    networkRunnerInstance.SessionInfo.IsOpen = false;
+      //  networkRunnerInstance.SessionInfo.IsOpen = false;
         networkRunnerInstance.LoadScene(GAME_SCENE_NAME);
     }
     
