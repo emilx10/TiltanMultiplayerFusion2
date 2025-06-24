@@ -8,6 +8,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 using Unity.Multiplayer;
+using UnityEngine.Serialization;
 
 
 public class LobbyManager : MonoBehaviour, INetworkRunnerCallbacks
@@ -15,9 +16,9 @@ public class LobbyManager : MonoBehaviour, INetworkRunnerCallbacks
     public static LobbyManager Instance;
     public const string GAME_SCENE_NAME = "GameScene";
 
-   // [SerializeField] private GameObject readyManagerGeneric;
     [SerializeField] private ReadyManager readyManagerPrefab;
-    [SerializeField] NetworkRunner networkRunner;
+    [SerializeField] private NetworkRunner networkRunnerPrefab;
+    [FormerlySerializedAs("networkRunner")] [SerializeField] NetworkRunner networkRunnerInstance;
 
     [Header("UI References")] [SerializeField]
     private GameObject sessionPanel;
@@ -34,7 +35,7 @@ public class LobbyManager : MonoBehaviour, INetworkRunnerCallbacks
     private void Start()
     {
         Instance = this;
-        networkRunner.AddCallbacks(this);
+        networkRunnerInstance.AddCallbacks(this);
 #if LOBBY_MANAGER_UI
         endSessionButton.interactable = false;
         startMatchButton.interactable = false;
@@ -42,18 +43,24 @@ public class LobbyManager : MonoBehaviour, INetworkRunnerCallbacks
 #endif
     }
 
-    public void StartSession()
+    public async void StartSession()
     {
-        networkRunner.StartGame(new StartGameArgs()
+#if LOBBY_MANAGER_UI
+        startSessionButton.interactable = false;
+#endif
+        
+       StartGameResult startGameResult = await networkRunnerInstance.StartGame(new StartGameArgs()
         {
             GameMode = GameMode.Shared,
             SessionName = "OurGameID",
             OnGameStarted = OnGameStarted
         });
 
-#if LOBBY_MANAGER_UI
-        startSessionButton.interactable = false;
-        #endif
+        if (startGameResult.Ok == false)
+        {
+            Debug.LogError($"Game failed to start because {startGameResult.ErrorMessage}, " +
+                           $"shutdown reason is {startGameResult.ShutdownReason}");
+        }
     }
 
     private void OnGameStarted(NetworkRunner obj)
@@ -64,17 +71,17 @@ public class LobbyManager : MonoBehaviour, INetworkRunnerCallbacks
         sendReadyButton.interactable = true;
     //    startMatchButton.interactable = true;
 #endif
-        if(networkRunner.IsSharedModeMasterClient)
-         networkRunner.Spawn(readyManagerPrefab);
+        if(networkRunnerInstance.IsSharedModeMasterClient)
+         networkRunnerInstance.Spawn(readyManagerPrefab);
         // if (networkRunner.IsSharedModeMasterClient)
         //     networkRunner.Spawn(readyManagerGeneric);
     }
 
     public void EndSession()
     {
-        if (networkRunner.IsRunning)
+        if (networkRunnerInstance.IsRunning)
         {
-            networkRunner.Shutdown();
+            networkRunnerInstance.Shutdown();
         }
 #if LOBBY_MANAGER_UI
         startSessionButton.interactable = true;
@@ -87,7 +94,7 @@ public class LobbyManager : MonoBehaviour, INetworkRunnerCallbacks
     public async void JoinLobby()
     {
        StartGameResult result = 
-           await networkRunner.JoinSessionLobby(SessionLobby.Custom, "MainLobby");
+           await networkRunnerInstance.JoinSessionLobby(SessionLobby.Custom, "MainLobby");
      
        if (result.Ok)
        {
@@ -98,27 +105,30 @@ public class LobbyManager : MonoBehaviour, INetworkRunnerCallbacks
     [ContextMenu( "Join Lobby Test")]
     public void LeaveLobbyTest()
     {
-        networkRunner.JoinSessionLobby(SessionLobby.Shared);
+        networkRunnerInstance.JoinSessionLobby(SessionLobby.Shared);
     }
 
     private void RefreshRoomUI()
     {
 #if LOBBY_MANAGER_UI
-        if (networkRunner.IsRunning && !networkRunner.IsShutdown)
+        if (networkRunnerInstance.IsRunning && !networkRunnerInstance.IsShutdown)
         { 
             sessionPanel.SetActive(true);
-            numberOfPlayersText.text = networkRunner.SessionInfo?.PlayerCount.ToString();
+            numberOfPlayersText.text = networkRunnerInstance.SessionInfo?.PlayerCount.ToString();
         }
         else
         {
             sessionPanel.SetActive(false);
+            startSessionButton.interactable = true;
         }
 #endif
     }
 
     public void StartMatch()
     {
-        networkRunner.LoadScene(GAME_SCENE_NAME);
+      //  networkRunnerInstance.SessionInfo.IsVisible = false;
+    //    networkRunnerInstance.SessionInfo.IsOpen = false;
+        networkRunnerInstance.LoadScene(GAME_SCENE_NAME);
     }
     
     public void SetReady()
@@ -136,6 +146,19 @@ public class LobbyManager : MonoBehaviour, INetworkRunnerCallbacks
         startMatchButton.interactable = true;
     }
 
+    private void SpawnNewRunner()
+    {
+        if (networkRunnerInstance != null)
+        {
+            networkRunnerInstance.RemoveCallbacks(this);
+        }
+        
+        networkRunnerInstance = Instantiate(networkRunnerPrefab);
+        networkRunnerInstance.AddCallbacks(this);
+
+        Debug.Log("New NetworkRunner spawned after shutdown");
+    }
+
     #region RunnerCallBacks
 
     public void OnObjectExitAOI(NetworkRunner runner, NetworkObject obj, PlayerRef player)
@@ -148,7 +171,7 @@ public class LobbyManager : MonoBehaviour, INetworkRunnerCallbacks
 
     public void OnPlayerJoined(NetworkRunner runner, PlayerRef player)
     {
-        bool isLocalPlayer = networkRunner.LocalPlayer == player;
+        bool isLocalPlayer = networkRunnerInstance.LocalPlayer == player;
 
         Debug.Log($"Player {player.PlayerId} joined, localPlayer: {isLocalPlayer}");
 
@@ -163,12 +186,14 @@ public class LobbyManager : MonoBehaviour, INetworkRunnerCallbacks
 
     public void OnShutdown(NetworkRunner runner, ShutdownReason shutdownReason)
     {
+        Debug.Log("ShutDown call because " + shutdownReason);
         RefreshRoomUI();
-
+        SpawnNewRunner();
     }
 
     public void OnDisconnectedFromServer(NetworkRunner runner, NetDisconnectReason reason)
     {
+        
     }
 
     public void OnConnectRequest(NetworkRunner runner, NetworkRunnerCallbackArgs.ConnectRequest request, byte[] token)
@@ -224,7 +249,7 @@ public class LobbyManager : MonoBehaviour, INetworkRunnerCallbacks
 
     public void OnSceneLoadDone(NetworkRunner runner)
     {
-        networkRunner.RemoveCallbacks(this);
+        networkRunnerInstance.RemoveCallbacks(this);
     }
 
     public void OnSceneLoadStart(NetworkRunner runner)
