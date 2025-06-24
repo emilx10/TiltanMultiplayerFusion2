@@ -24,8 +24,13 @@ public class PlayerCharacter : NetworkBehaviour
     [SerializeField] Transform projectileSpawnPoint;
     
     [Networked, OnChangedRender (nameof(HPChanged))] [field: SerializeField]
-    public int HP { get; set; }
+    public int HP
+    {
+        get;
+        set;
+    }
 
+    private int obsedHP = 0;
     private bool pressedFire = false;
 
     [ContextMenu("TakeDamageTest")]
